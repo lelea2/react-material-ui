@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import Button from '@material-ui/core/Button';
 import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Paper from '@material-ui/core/Paper';
 import MenuList from '@material-ui/core/MenuList';
@@ -20,10 +19,7 @@ import {
   DropdownHeaderDiv,
   DropdownHeaderSpan,
   DropdownDivider,
-  dropdownMenuStyle,
-  dropdownStyle,
-  dropdownBtnStyle,
-  dropdownDividerStyle
+  DropdownLabel
 } from './DropdownStyle';
 
 const StyledButton = styled(Button)`
@@ -38,13 +34,20 @@ const StyledButton = styled(Button)`
   }
 `;
 
-const StyledMenu = styled(Menu)`
-  && {
-
-  }
-`
 const StyledContainer = styled.div`
   position: relative;
+`;
+
+const StyledMenuItem = styled(MenuItem)`
+  && {
+    padding: 0;
+    height: auto;
+    &:focus,
+    &:hover,
+    &:active {
+      background: #ededed !important;
+    }
+  }
 `;
 
 class RSDropdown extends React.Component {
@@ -143,14 +146,14 @@ class RSDropdown extends React.Component {
     const { name, disabled, value } = option;
     const active = this.isItemActive(value);
     return (filterOptions.indexOf(value) < 0) && (
-      <MenuItem className={'dropdown-item'} disabled={disabled} active={active}>
+      <StyledMenuItem className={'dropdown-item'} disabled={disabled} active={active}>
         <ItemDiv
           className={classNames('', { disabled, active })}
           onClick={this.handleSelect.bind(this, option)}>
             {name}
             {multiSelected && this.renderCheckBox(disabled, active)}
         </ItemDiv>
-      </MenuItem>
+      </StyledMenuItem>
     );
   }
 
@@ -194,11 +197,12 @@ class RSDropdown extends React.Component {
   }
 
   render() {
-    const { options, searchEnabled, id } = this.props;
+    const { options, searchEnabled, id, label } = this.props;
     const { open, hidden, selected } = this.state;
 
     return (
       <StyledContainer>
+        {label && <DropdownLabel>{label}</DropdownLabel>}
         <StyledButton
           buttonRef={node => {
             this.anchorEl = node;
@@ -227,6 +231,7 @@ class RSDropdown extends React.Component {
 }
 
 RSDropdown.propTypes = {
+  label: PropTypes.node,
   id: PropTypes.string,
   selected: PropTypes.any,
   options: PropTypes.arrayOf(

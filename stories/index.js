@@ -13,8 +13,8 @@ stories.add('Dropdown', () => {
   return (
     <div style={{ width: '100%' }}>
       <div style={{ width: '320px', margin: '20px' }}>
-        <label>Simple dropdown</label>
         <Dropdown
+          label={<label>Simple dropdown</label>}
           options={example1}
           selected={example1[3].value}
           onSelectChange={(data) => {
@@ -22,8 +22,8 @@ stories.add('Dropdown', () => {
           }}
         />
         <br />
-        <label>Simple dropdown with search enabled</label>
         <Dropdown
+          label={<label>Simple dropdown with search enabled</label>}
           searchEnabled
           options={example1}
           selected={example1[3].value}
@@ -31,23 +31,23 @@ stories.add('Dropdown', () => {
             alert(data.value);
           }}
         />
-        <label>Simple dropdown with multi-selected</label>
         <Dropdown
+          label={<label>Simple dropdown with multi-selected</label>}
           multiSelected
           options={example1}
           selected={[example1[3].value]}
         />
         <br />
-        <label>Dropdown with group</label>
         <Dropdown
+          label={<label>Dropdown with group</label>}
           options={example2}
           selected={example2[0].value}
         />
         <br />
       </div>
       <div>
-        <label>Dropdown with markup</label>
         <Dropdown
+          label={<label>Dropdown with markup</label>}
           options={[{
             name: <div>
               <p><b>Test1</b></p>

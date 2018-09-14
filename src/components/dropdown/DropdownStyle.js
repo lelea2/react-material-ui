@@ -1,30 +1,5 @@
 import styled, { css } from 'styled-components';
 
-const dropdownStyle = {
-  color: '#191919',
-  width: '100%',
-  fontSize: '16px',
-  fontWeight: '300',
-  textAlign: 'left',
-  lineHeight: '1.4',
-  display: 'block',
-  borderRadius: '0 0 2px 2px',
-  borders: '1px solid rgba(0,0,0,0.2)'
-};
-
-const dropdownBtnStyle = {
-  color: '#191919',
-  width: '100%',
-  fontSize: '16px',
-  fontWeight: '300',
-  textAlign: 'left',
-  lineHeight: '1.4',
-  display: 'block',
-  borderRadius: '2px',
-  borderColor: 'rgba(0,0,0,0.2)',
-  borders: '1px solid rgba(0,0,0,0.2)'
-};
-
 const DropdownDiv = styled.div`
   width: 100%;
   display: grid;
@@ -80,28 +55,6 @@ const DropdownHeaderSpan = styled.span`
   white-space: nowrap;
 `;
 
-const dropdownMenuStyle = {
-  position: 'absolute',
-  top: '100%',
-  left: '0',
-  zIndex: '1035',
-  float: 'left',
-  width: '100%',
-  minWidth: '160px',
-  margin: '2px 0 0', // override default ul
-  listStyle: 'none',
-  fontSize: '16px',
-  textAlign: 'left', // Ensures proper alignment if parent has it changed (e.g., modal footer)
-  backgroundColor: '#fff',
-  borders: '1px solid rgba(0,0,0,.15)',
-  borderRadius: '2px',
-  backgroundClip: 'padding-box',
-};
-
-const dropdownDividerStyle = {
-  borderTop: '1px solid #ededed'
-};
-
 const DropdownMenuContainer = styled.div`
   max-height: 200px;
   overflow: auto;
@@ -151,7 +104,9 @@ const InputCheckBox = styled.input `
 `;
 
 const DropdownDivider = styled.hr`
-  border: 1px solid #ededed;
+  background: #ededed;
+  border: 0;
+  height: 1px;
 `;
 
 const DropdownPopup = styled.div`
@@ -169,10 +124,14 @@ const DropdownPopup = styled.div`
   background-clip: padding-box;
   border: 1px solid rgba(0,0,0,0.15);
   display: block;
-  width: 100%;
+  width: calc(100% - 2px);
   font-size: 16px;
   text-align: left;
   border-radius: 2px;
+`;
+
+const DropdownLabel = styled.div`
+  padding: 10px 0;
 `;
 
 export {
@@ -187,8 +146,5 @@ export {
   DropdownHeaderDiv,
   DropdownHeaderSpan,
   DropdownDivider,
-  dropdownDividerStyle,
-  dropdownStyle,
-  dropdownMenuStyle,
-  dropdownBtnStyle
+  DropdownLabel
 };
