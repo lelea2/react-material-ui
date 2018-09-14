@@ -7,6 +7,7 @@ import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Paper from '@material-ui/core/Paper';
 import MenuList from '@material-ui/core/MenuList';
 import classNames from 'classnames';
+import InputSearch from './InputSearch';
 import {
   InputCheckBox,
   StyleWrapperDiv,
@@ -28,6 +29,7 @@ const StyledButton = styled(Button)`
     border-radius: 0;
     border: 1px solid #ededed;
     text-transform: none;
+    padding: 8px;
     &:hover {
       background: transparent;
     }
@@ -189,11 +191,28 @@ class RSDropdown extends React.Component {
     });
     return data.map((val, i) => {
       return (
-        <div>
+        <React.Fragment>
           {val}{(i < data.length - 1) ? ', ' : ''}
-        </div>
+        </React.Fragment>
       );
     });
+  }
+
+  handleSearch = (e) => {
+    const { flatOptions } = this.state;
+    const searchText = e.target.value;
+    if (!!searchText) {
+      const filterOptions = flatOptions.map((item) => {
+        const valStr = `${item.name}`;
+        const idx = valStr.toLowerCase().search(searchText.toLowerCase());
+        if (idx < 0) {
+          return item.value;
+        }
+      });
+      this.setState({ filterOptions });
+    } else {
+      this.setState({ filterOptions: [] })
+    }
   }
 
   render() {
@@ -220,6 +239,7 @@ class RSDropdown extends React.Component {
           <Paper>
             {open && <DropdownPopup>
               <MenuList>
+                {searchEnabled && <InputSearch handleOnChange={this.handleSearch} />}
                 {this.renderDropdownList(options)}
               </MenuList>
             </DropdownPopup>}
