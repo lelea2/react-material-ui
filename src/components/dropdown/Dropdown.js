@@ -8,11 +8,11 @@ import Paper from '@material-ui/core/Paper';
 import MenuList from '@material-ui/core/MenuList';
 import classNames from 'classnames';
 import InputSearch from './InputSearch';
+import IconButton from '@material-ui/core/IconButton';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 import {
   InputCheckBox,
-  StyleWrapperDiv,
   ItemDiv,
-  DropdownMenuContainer,
   DropdownPopup,
   DropdownDiv,
   DropdownText,
@@ -25,13 +25,20 @@ import {
 
 const StyledButton = styled(Button)`
   && {
+    font-size: 16px;
+    background: #fff;
+    font-weight: 300;
     width: 100%;
     border-radius: 0;
     border: 1px solid #ededed;
     text-transform: none;
-    padding: 8px;
+    padding: 6px 8px;
     &:hover {
       background: transparent;
+    }
+    &:focus,
+    &:active {
+      border: 1px solid #364BC4;
     }
   }
 `;
@@ -49,6 +56,14 @@ const StyledMenuItem = styled(MenuItem)`
     &:active {
       background: #ededed !important;
     }
+  }
+`;
+
+const StyledMenuList = styled(MenuList)`
+  && {
+    height: auto;
+    max-height: ${props => props.listLength};
+    overflow: auto;
   }
 `;
 
@@ -75,10 +90,10 @@ class RSDropdown extends React.Component {
 
   // This is to create a flat options hierarchy for searching
   getOptions = (options) => {
-    const arr = [];
+    let arr = [];
     options.map((option) => {
       if (option.options) {
-        arr.push(this.getOptions(option.options));
+        arr = arr.concat(this.getOptions(option.options));
       } else {
         arr.push(option);
       }
@@ -88,15 +103,14 @@ class RSDropdown extends React.Component {
 
   handleToggle = () => {
     this.setState(state => ({ open: !state.open }));
-  };
+  }
 
   handleClose = event => {
     if (this.anchorEl.contains(event.target)) {
       return;
     }
-
     this.setState({ open: false });
-  };
+  }
 
   validateSelected = (option) => {
     const { multiSelected } = this.props;
@@ -118,9 +132,9 @@ class RSDropdown extends React.Component {
     if (option.disabled) { // nothing triggered if item is disabled
       return;
     }
+    const selected = this.validateSelected(option);
     this.setState({
-      selected: this.validateSelected(option),
-      hidden: true,
+      selected,
       open: false,
     });
     if (this.props.onSelectChange) {
@@ -142,13 +156,18 @@ class RSDropdown extends React.Component {
     return (!disabled && !active) && <InputCheckBox disabled={disabled} type="checkbox" />;
   }
 
-  renderItem(option) {
+  renderItem(option, key) {
     const { filterOptions } = this.state;
     const { multiSelected } = this.props;
     const { name, disabled, value } = option;
     const active = this.isItemActive(value);
     return (filterOptions.indexOf(value) < 0) && (
-      <StyledMenuItem className={'dropdown-item'} disabled={disabled} active={active}>
+      <StyledMenuItem
+        key={key}
+        className={'dropdown-item'}
+        disabled={disabled}
+        active={active}
+      >
         <ItemDiv
           className={classNames('', { disabled, active })}
           onClick={this.handleSelect.bind(this, option)}>
@@ -159,16 +178,16 @@ class RSDropdown extends React.Component {
     );
   }
 
-  renderGroup(option) {
+  renderGroup(option, key) {
     const { label, options } = option;
     return (
-      <div>
+      <div key={key}>
         <DropdownDivider />
         <DropdownHeaderDiv>
           <DropdownHeaderSpan>{label}</DropdownHeaderSpan>
         </DropdownHeaderDiv>
         {options.map((item, i) => {
-          return this.renderItem(item);
+          return this.renderItem(item, `${key}-item-${i}`);
         })}
       </div>
     );
@@ -176,7 +195,7 @@ class RSDropdown extends React.Component {
 
   renderDropdownList = (options) => {
     return options.map((option, i) => {
-      return (option.options) ? this.renderGroup(option) : this.renderItem(option);
+      return (option.options) ? this.renderGroup(option, `group-${i}`) : this.renderItem(option, `item-${i}`);
     });
   }
 
@@ -191,9 +210,9 @@ class RSDropdown extends React.Component {
     });
     return data.map((val, i) => {
       return (
-        <React.Fragment>
+        <span key={i}>
           {val}{(i < data.length - 1) ? ', ' : ''}
-        </React.Fragment>
+        </span>
       );
     });
   }
@@ -215,33 +234,57 @@ class RSDropdown extends React.Component {
     }
   }
 
+  renderButton() {
+    const { buttonType } = this.props;
+    const { open, selected } = this.state;
+    switch (buttonType) {
+      // TODO: should think about extracting this out to be more flexible
+      case 'icon':
+        return (
+          <IconButton
+            buttonRef={node => {
+              this.anchorEl = node;
+            }}
+            aria-label="More"
+            aria-owns={open ? 'menu-list-grow' : null}
+            onClick={this.handleToggle}
+          >
+            <MoreVertIcon />
+          </IconButton>
+        );
+      default:
+        return (
+          <StyledButton
+            buttonRef={node => {
+              this.anchorEl = node;
+            }}
+            aria-owns={open ? 'menu-list-grow' : null}
+            onClick={this.handleToggle}
+          >
+            <DropdownDiv>
+              <DropdownText>{this.getDisplayValue(selected)}</DropdownText>
+              <DropdownCaret />
+            </DropdownDiv>
+          </StyledButton>
+        );
+    }
+  }
+
   render() {
-    const { options, searchEnabled, id, label } = this.props;
-    const { open, hidden, selected } = this.state;
+    const { options, searchEnabled, id, label, buttonType, listLength } = this.props;
+    const { open, selected } = this.state;
 
     return (
-      <StyledContainer>
+      <StyledContainer id={id}>
         {label && <DropdownLabel>{label}</DropdownLabel>}
-        <StyledButton
-          buttonRef={node => {
-            this.anchorEl = node;
-          }}
-          aria-owns={open ? 'menu-list-grow' : null}
-          aria-haspopup="true"
-          onClick={this.handleToggle}
-        >
-          <DropdownDiv>
-            <DropdownText>{this.getDisplayValue(selected)}</DropdownText>
-            <DropdownCaret />
-          </DropdownDiv>
-        </StyledButton>
+        {this.renderButton()}
         <ClickAwayListener onClickAway={this.handleClose}>
           <Paper>
-            {open && <DropdownPopup>
-              <MenuList>
+            {open && <DropdownPopup type={buttonType}>
+              <StyledMenuList listLength={listLength}>
                 {searchEnabled && <InputSearch handleOnChange={this.handleSearch} />}
                 {this.renderDropdownList(options)}
-              </MenuList>
+              </StyledMenuList>
             </DropdownPopup>}
           </Paper>
         </ClickAwayListener>
@@ -254,6 +297,8 @@ RSDropdown.propTypes = {
   label: PropTypes.node,
   id: PropTypes.string,
   selected: PropTypes.any,
+  buttonType: PropTypes.oneOf(['icon', 'label']),
+  listLength: PropTypes.string,
   options: PropTypes.arrayOf(
     PropTypes.oneOfType([
       PropTypes.shape({
@@ -276,17 +321,17 @@ RSDropdown.propTypes = {
     ])
   ).isRequired,
   searchEnabled: PropTypes.bool,
-  styled: PropTypes.object,
   onSelectChange: PropTypes.func,
   multiSelected: PropTypes.bool
 };
 
 RSDropdown.defaultProps = {
+  label: null,
+  listLength: '200px',
+  buttonType: 'label',
   selected: 'Select...',
   options: [],
-  isRequired: false,
-  multiSelected: false,
-  styled: {}
+  multiSelected: false
 };
 
 export default RSDropdown;

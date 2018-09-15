@@ -41,7 +41,7 @@ const DropdownCaret = styled.div`
 
 const DropdownHeaderDiv = styled.div`
   display: block;
-  padding: 3px 20px;
+  padding: 3px 16px;
   font-size: 14px;
   line-height: 1.618;
   color: #999;
@@ -55,16 +55,12 @@ const DropdownHeaderSpan = styled.span`
   white-space: nowrap;
 `;
 
-const DropdownMenuContainer = styled.div`
-  max-height: 200px;
-  overflow: auto;
-`;
-
 // Can't do html escape for now since styled-components does not seem to support yet
 // https://github.com/styled-components/styled-components/issues/1285
 const ItemDiv = styled.a`
   cursor: pointer !important;
   padding: 12px 16px 16px 16px;
+  font-size: 16px;
   color: #666 !important;
   display: block;
   position: relative;
@@ -92,13 +88,6 @@ const ItemDiv = styled.a`
   }
 `;
 
-const StyleWrapperDiv = styled.div`
-  .dropdown-item {
-    padding: 0;
-    background: transparent !important;
-  }
-`;
-
 const InputCheckBox = styled.input `
   float: right;
 `;
@@ -112,7 +101,6 @@ const DropdownDivider = styled.hr`
 const DropdownPopup = styled.div`
   position: absolute;
   top: 100%;
-  left: 0;
   z-index: 1000;
   float: left;
   min-width: 10rem;
@@ -124,10 +112,12 @@ const DropdownPopup = styled.div`
   background-clip: padding-box;
   border: 1px solid rgba(0,0,0,0.15);
   display: block;
-  width: calc(100% - 2px);
   font-size: 16px;
   text-align: left;
   border-radius: 2px;
+  width: ${(props) => (props.type === 'icon') ? 'auto' : 'calc(100% - 2px)'};
+  left: ${(props) => (props.type === 'icon') ? 'auto' : '0'};
+  right: ${(props) => (props.type === 'icon') ? '0' : 'auto'};
 `;
 
 const DropdownLabel = styled.div`
@@ -136,10 +126,8 @@ const DropdownLabel = styled.div`
 
 export {
   InputCheckBox,
-  StyleWrapperDiv,
   ItemDiv,
   DropdownPopup,
-  DropdownMenuContainer,
   DropdownDiv,
   DropdownText,
   DropdownCaret,
